@@ -4,12 +4,26 @@ import cl.patrones.examen.productos.domain.Producto;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 @Component
 public class DescuentoEsmerilMartes
         implements DescuentoStrategy {
+
+    private final Clock clock;
+
+    public DescuentoEsmerilMartes() {
+        this.clock =
+                Clock.systemDefaultZone();
+    }
+
+    public DescuentoEsmerilMartes(
+            Clock clock
+    ) {
+        this.clock = clock;
+    }
 
     @Override
     public Long aplicarDescuento(
@@ -19,20 +33,20 @@ public class DescuentoEsmerilMartes
 
         boolean esMartes =
 
-                LocalDate.now()
+                LocalDate.now(clock)
                         .getDayOfWeek()
-
                         == DayOfWeek.TUESDAY;
 
         boolean esEsmeril =
 
-                producto.getCategoria()
+                producto
+                        .getCategoria()
                         .getNombre()
                         .equalsIgnoreCase(
                                 "Esmeriles Angulares"
                         );
 
-        return (esMartes && esEsmeril)
+        return esMartes && esEsmeril
                 ? 8L
                 : 0L;
     }
